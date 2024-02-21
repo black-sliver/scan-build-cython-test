@@ -1,0 +1,43 @@
+name: static analysis
+
+on:
+  push:
+    paths:
+      - '**'
+      - '!**.md'
+      - '!.gitignore'
+  pull_request:
+    paths:
+      - '**'
+      - '!**.md'
+      - '!.gitignore'
+
+jobs:
+
+  scan-build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Get a recent python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        "${{ env.PYTHON }}" -m venv venv
+        source venv/bin/activate
+        python -m pip install --upgrade pip -r requirements.txt
+    - name: scan-build
+      run: |
+        source venv/bin/activate
+        scan-build --status-bugs -o scan-build-reports -disable-checker deadcode.DeadStores python setup.py build
+    - name: Store result
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: scan-build-reports
+        path: scan-build-reports

@@ -1,0 +1,4 @@
+/*.c
+/build/
+/venv/
+/scan-build-reports/
