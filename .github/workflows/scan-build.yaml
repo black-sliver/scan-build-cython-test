@@ -43,7 +43,7 @@ jobs:
       run: |
         source venv/bin/activate
         scan-build-17 --status-bugs -o scan-build-reports -disable-checker deadcode.DeadStores python setup.py build
-    - name: Store result
+    - name: Store report
       if: failure()
       uses: actions/upload-artifact@v4
       with:
